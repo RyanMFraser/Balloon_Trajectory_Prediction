@@ -211,19 +211,22 @@ ways to get that: use summary statistics (mean, std); use a shared encoder per m
   and rank histograms to check calibration (FCN3 uses all of these).
 - **Downstream proxy** (later): trajectory error from advecting a parcel through the predicted hourly winds vs ERA5.
 
-### Baselines to implement (issue #2)
-1. **Linear interp** between ERA5 t0 and a single FCN3 member at t6.
-2. Linear interp between ERA5 t0 and the **FCN3 ensemble mean** at t6 (expected to beat 1).
-3. Same, with cubic/Hermite interpolation in time using the 12h and 18h leads (optional).
-4. Oracle reference: linear interp between **true** ERA5 t0 and t6. This lower-bounds what interpolation alone
-   can achieve and isolates the endpoint-error contribution.
+### Baseline (issue #2, team decision: exactly one)
+Straight linear interpolation in time between ERA5 t0 and the **FCN3 ensemble mean** at t6, scored with MSE (the
+loss is a parameter so it can change later). It is in `src/balloon/baselines.py`, and results are in
+`docs/baselines.md`. Don't add more baselines.
 
 ---
 
 ## Conventions
 - Environment: `.venv/` (Python 3.14, `pip install -r requirements.txt`). Select it as the notebook kernel.
-- Data pipeline: `notebooks/data_pipeline.ipynb` (issue #1). Models should get their data through
-  `make_patch_dataset`, never by reading raw files directly, so splits and normalization stay consistent.
+- Code lives in the `balloon` package (`src/balloon/`, `pip install -e .`):
+  - `data.py`: splits, normalization stats, `make_patch_dataset` (patches) and `load_winds` (full domain).
+    Models get their data through these, never by reading raw files, so splits and normalization stay consistent.
+    `notebooks/data_pipeline.ipynb` runs and explains it (issue #1).
+  - `baselines.py`: the one baseline (`linear_interpolation`). `metrics.py`: `evaluate(prediction, truth, loss)` returns per
+    (hour, var, level) scores. `runs.py`: local run records in `runs/<name>/` (gitignored).
+  - Results and reproduction steps are in `docs/baselines.md`. **Target levels: 30, 50, 70, 100, 125, 150, 175 hPa.**
 - Python. Use `xarray` + `netCDF4`/`h5netcdf` to read data and PyTorch for models. Open the large files lazily and
   index with `.sel(...)`.
 - Raw data lives in `data/`, which is gitignored along with `*.nc` and `*.parquet`. Save processed datasets

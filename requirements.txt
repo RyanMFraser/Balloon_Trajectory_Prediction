@@ -7,3 +7,4 @@ pyarrow
 matplotlib
 ipykernel
 jupyter
+-e .

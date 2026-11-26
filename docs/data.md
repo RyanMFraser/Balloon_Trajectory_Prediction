@@ -130,7 +130,7 @@ this in mind before blaming the model. Training on several years would cover bot
   the train set changes.
 - `make_patch_dataset(split, window_size, label_size, n_per_window | stride, member_mode, target_levels)` returns
   `X (N, C, k, k)`, `Y (N, 6, 2, L, l, l)` and `meta`. `window_size=1` is pointwise.
-- Split rules live in `SPLIT_RULES` in the notebook. To add data, drop new month pairs into `data/fcn3_region/`
+- Split rules live in `SPLIT_RULES` in `src/balloon/data.py`. To add data, drop new month pairs into `data/fcn3_region/`
   and re-run.
 
 ## Per-level scale (ERA5 u/v std, m/s; varies by month)
