@@ -1,0 +1,7 @@
+data/*
+!data/data.md
+*.nc
+*.parquet
+.venv/
+.ipynb_checkpoints/
+__pycache__/
